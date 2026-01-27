@@ -1,0 +1,101 @@
+{
+    "resourceSpecId": "33333333-3333-4333-8333-333333333331",
+    "stableId": "main-alb",
+    "displayName": "Main Application Load Balancer",
+    "resourceType": "loadbalancer.elb",
+    "vpcDependency": "required",
+    "status": "draft",
+    "inputs": {
+        "name": "sigmoid-main-alb",
+        "load_balancer_type": "application",
+        "internal": false,
+        "subnets": [
+            { "ref": "public-subnet-1.id", "required": true },
+            { "ref": "public-subnet-2.id", "required": true }
+        ],
+        "security_groups": [
+            { "ref": "alb-sg.id", "required": true }
+        ],
+        "enable_deletion_protection": true,
+        "enable_cross_zone_load_balancing": true,
+        "idle_timeout": 60,
+        "enable_http2": true,
+        "drop_invalid_header_fields": true,
+        "access_logs": {
+            "enabled": true,
+            "bucket": { "ref": "logs-bucket.id" },
+            "prefix": "alb-logs"
+        },
+        "listeners": [
+            {
+                "port": 80,
+                "protocol": "HTTP",
+                "default_action": {
+                    "type": "redirect",
+                    "redirect": {
+                        "port": "443",
+                        "protocol": "HTTPS",
+                        "status_code": "HTTP_301"
+                    }
+                }
+            },
+            {
+                "port": 443,
+                "protocol": "HTTPS",
+                "ssl_policy": "ELBSecurityPolicy-TLS13-1-2-2021-06",
+                "certificate_arn": { "ref": "acm-cert.arn" },
+                "default_action": {
+                    "type": "forward",
+                    "target_group_key": "main-tg"
+                }
+            }
+        ],
+        "target_groups": [
+            {
+                "name": "sigmoid-main-tg",
+                "backend_protocol": "HTTP",
+                "backend_port": 8080,
+                "target_type": "ip",
+                "health_check": {
+                    "enabled": true,
+                    "path": "/health",
+                    "port": "traffic-port",
+                    "protocol": "HTTP",
+                    "healthy_threshold": 2,
+                    "unhealthy_threshold": 3,
+                    "timeout": 5,
+                    "interval": 30
+                }
+            }
+        ],
+        "tags": {
+            "Environment": "production",
+            "Project": "sigmoid"
+        }
+    },
+    "inputSpecs": [
+        { "name": "name", "type": "string", "required": true },
+        { "name": "load_balancer_type", "type": "string", "required": true },
+        { "name": "internal", "type": "boolean", "required": false, "default": false },
+        { "name": "subnets", "type": "array", "required": true },
+        { "name": "security_groups", "type": "array", "required": false },
+        { "name": "enable_deletion_protection", "type": "boolean", "required": false, "default": false },
+        { "name": "enable_cross_zone_load_balancing", "type": "boolean", "required": false, "default": true },
+        { "name": "idle_timeout", "type": "number", "required": false, "default": 60 },
+        { "name": "enable_http2", "type": "boolean", "required": false, "default": true },
+        { "name": "drop_invalid_header_fields", "type": "boolean", "required": false, "default": false },
+        { "name": "access_logs", "type": "object", "required": false },
+        { "name": "listeners", "type": "array", "required": false },
+        { "name": "target_groups", "type": "array", "required": false },
+        { "name": "tags", "type": "object", "required": false }
+    ],
+    "scope": {
+        "vpcId": "main-vpc"
+    },
+    "position": { "x": 200, "y": 100 },
+    "terraform": {
+        "module": {
+            "source": "../../terraform-modules/terraform-aws-alb"
+        }
+    }
+}
