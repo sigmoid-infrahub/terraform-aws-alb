@@ -11,6 +11,14 @@
         "name": "sigmoid-main-alb",
         "load_balancer_type": "application",
         "internal": false,
+        "vpc_id": { "ref": "main-vpc.id", "required": true },
+        "subnet_ids": [
+            { "ref": "public-subnet-1.id", "required": true },
+            { "ref": "public-subnet-2.id", "required": true }
+        ],
+        "security_group_ids": [
+            { "ref": "alb-sg.id", "required": true }
+        ],
         "subnets": [
             { "ref": "public-subnet-1.id", "required": true },
             { "ref": "public-subnet-2.id", "required": true }
@@ -79,8 +87,11 @@
         { "name": "name", "type": "string", "required": true, "description": "Load balancer name" },
         { "name": "load_balancer_type", "type": "string", "required": true, "validation": { "enum": ["application", "network", "gateway"] }, "description": "Type of load balancer" },
         { "name": "internal", "type": "boolean", "required": false, "default": false, "description": "Whether the load balancer is internal" },
-        { "name": "subnets", "type": "array", "required": true, "description": "List of subnet IDs for the load balancer" },
-        { "name": "security_groups", "type": "array", "required": false, "description": "List of security group IDs (ALB only)" },
+        { "name": "vpc_id", "type": "string", "required": true, "description": "VPC ID where the load balancer will be created" },
+        { "name": "subnet_ids", "type": "array", "required": true, "description": "List of subnet IDs for the load balancer" },
+        { "name": "security_group_ids", "type": "array", "required": false, "description": "List of security group IDs (ALB only)" },
+        { "name": "subnets", "type": "array", "required": true, "description": "List of subnet IDs for the load balancer (legacy)" },
+        { "name": "security_groups", "type": "array", "required": false, "description": "List of security group IDs (ALB only, legacy)" },
         { "name": "enable_deletion_protection", "type": "boolean", "required": false, "default": false, "description": "Enable deletion protection" },
         { "name": "enable_cross_zone_load_balancing", "type": "boolean", "required": false, "default": true, "description": "Enable cross-zone load balancing" },
         { "name": "idle_timeout", "type": "number", "required": false, "default": 60, "validation": { "min": 1, "max": 4000 }, "description": "Idle timeout in seconds (ALB only)" },
@@ -97,7 +108,8 @@
     "position": { "x": 200, "y": 100 },
     "terraform": {
         "module": {
-            "source": "../../terraform-modules/terraform-aws-alb"
+            "source": "github.com/sigmoid-hq/terraform-aws-alb",
+            "ref": "main"
         }
     }
 }
