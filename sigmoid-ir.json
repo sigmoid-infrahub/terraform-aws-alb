@@ -2,6 +2,8 @@
     "resourceSpecId": "33333333-3333-4333-8333-333333333331",
     "stableId": "main-alb",
     "displayName": "Main Application Load Balancer",
+    "category": "network",
+    "iconUrl": "https://cdn.sigmoid.us/icons/aws/full-size/svg/networking/elb.svg",
     "resourceType": "loadbalancer.elb",
     "vpcDependency": "required",
     "status": "draft",
@@ -74,20 +76,20 @@
         }
     },
     "inputSpecs": [
-        { "name": "name", "type": "string", "required": true },
-        { "name": "load_balancer_type", "type": "string", "required": true },
-        { "name": "internal", "type": "boolean", "required": false, "default": false },
-        { "name": "subnets", "type": "array", "required": true },
-        { "name": "security_groups", "type": "array", "required": false },
-        { "name": "enable_deletion_protection", "type": "boolean", "required": false, "default": false },
-        { "name": "enable_cross_zone_load_balancing", "type": "boolean", "required": false, "default": true },
-        { "name": "idle_timeout", "type": "number", "required": false, "default": 60 },
-        { "name": "enable_http2", "type": "boolean", "required": false, "default": true },
-        { "name": "drop_invalid_header_fields", "type": "boolean", "required": false, "default": false },
-        { "name": "access_logs", "type": "object", "required": false },
-        { "name": "listeners", "type": "array", "required": false },
-        { "name": "target_groups", "type": "array", "required": false },
-        { "name": "tags", "type": "object", "required": false }
+        { "name": "name", "type": "string", "required": true, "description": "Load balancer name" },
+        { "name": "load_balancer_type", "type": "string", "required": true, "validation": { "enum": ["application", "network", "gateway"] }, "description": "Type of load balancer" },
+        { "name": "internal", "type": "boolean", "required": false, "default": false, "description": "Whether the load balancer is internal" },
+        { "name": "subnets", "type": "array", "required": true, "description": "List of subnet IDs for the load balancer" },
+        { "name": "security_groups", "type": "array", "required": false, "description": "List of security group IDs (ALB only)" },
+        { "name": "enable_deletion_protection", "type": "boolean", "required": false, "default": false, "description": "Enable deletion protection" },
+        { "name": "enable_cross_zone_load_balancing", "type": "boolean", "required": false, "default": true, "description": "Enable cross-zone load balancing" },
+        { "name": "idle_timeout", "type": "number", "required": false, "default": 60, "validation": { "min": 1, "max": 4000 }, "description": "Idle timeout in seconds (ALB only)" },
+        { "name": "enable_http2", "type": "boolean", "required": false, "default": true, "description": "Enable HTTP/2 (ALB only)" },
+        { "name": "drop_invalid_header_fields", "type": "boolean", "required": false, "default": false, "description": "Drop invalid header fields (ALB only)" },
+        { "name": "access_logs", "type": "object", "required": false, "description": "Access logs configuration" },
+        { "name": "listeners", "type": "array", "required": false, "description": "List of listener configurations" },
+        { "name": "target_groups", "type": "array", "required": false, "description": "List of target group configurations" },
+        { "name": "tags", "type": "object", "required": false, "description": "Resource tags" }
     ],
     "scope": {
         "vpcId": "main-vpc"
