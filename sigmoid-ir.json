@@ -1,0 +1,78 @@
+{
+    "resourceSpecId": "33333333-3333-4333-8333-333333333331",
+    "stableId": "main-alb",
+    "displayName": "Application Load Balancer",
+    "category": "network",
+    "iconUrl": "https://cdn.sigmoid.us/icons/aws/full-size/svg/networking/elb.svg",
+    "resourceType": "loadbalancer.elb",
+    "vpcDependency": "required",
+    "status": "draft",
+    "position": { "x": 200, "y": 100 },
+    "terraform": {
+        "module": {
+            "source": "github.com/sigmoid-hq/terraform-aws-alb",
+            "ref": "main"
+        }
+    },
+    "outputs": [
+        { "name": "lb_arn" },
+        { "name": "dns_name" },
+        { "name": "default_target_group_arn" }
+    ],
+    "pricing": {
+        "lookups": [
+            {
+                "serviceCode": "AWSELB",
+                "unit": "hourly",
+                "quantityProperties": ["load_balancer_count", "count"],
+                "quantityDefault": 1,
+                "filters": [
+                    { "field": "location", "value": "${location}" },
+                    { "field": "productFamily", "value": "Load Balancer-Application" },
+                    { "field": "usagetype", "defaultValue": "LoadBalancerUsage", "required": false }
+                ]
+            },
+            {
+                "serviceCode": "AWSELB",
+                "unit": "hourly",
+                "quantityProperties": ["monthly_lcu_hours"],
+                "quantityDefault": 0,
+                "monthlyHours": 1,
+                "filters": [
+                    { "field": "location", "value": "${location}" },
+                    { "field": "productFamily", "value": "Load Balancer Capacity Unit" },
+                    { "field": "usagetype", "defaultValue": "LCUUsage", "required": false }
+                ]
+            }
+        ],
+        "usageProfiles": {
+            "default": "medium",
+            "low": {
+                "load_balancer_count": 1,
+                "count": 1,
+                "monthly_lcu_hours": 200
+            },
+            "medium": {
+                "load_balancer_count": 2,
+                "count": 2,
+                "monthly_lcu_hours": 1500
+            },
+            "high": {
+                "load_balancer_count": 4,
+                "count": 4,
+                "monthly_lcu_hours": 6000
+            },
+            "xhigh": {
+                "load_balancer_count": 8,
+                "count": 8,
+                "monthly_lcu_hours": 24000
+            }
+        }
+    },
+    "easy": {
+        "alias": "Load Balancer",
+        "group": "network-load-balancer",
+        "priority": 10,
+        "allowedProperties": ["name", "subnets", "domain_name", "security_groups", "internal", "load_balancer_type", "count"]
+    }
+}
