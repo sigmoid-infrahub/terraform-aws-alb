@@ -11,6 +11,7 @@ resource "aws_lb" "this" {
   idle_timeout                     = var.idle_timeout
   enable_http2                     = var.enable_http2
   drop_invalid_header_fields       = var.drop_invalid_header_fields
+  enable_waf_fail_open             = var.enable_waf_fail_open
 
   dynamic "access_logs" {
     for_each = var.access_logs == null ? [] : [var.access_logs]
@@ -97,7 +98,7 @@ resource "aws_lb_listener" "this" {
   load_balancer_arn = aws_lb.this.arn
   port              = each.value.port
   protocol          = each.value.protocol
-  ssl_policy        = lookup(each.value, "ssl_policy", null)
+  ssl_policy        = contains(["HTTPS", "TLS"], each.value.protocol) ? coalesce(lookup(each.value, "ssl_policy", null), var.ssl_policy) : null
   certificate_arn   = lookup(each.value, "certificate_arn", null)
 
   default_action {

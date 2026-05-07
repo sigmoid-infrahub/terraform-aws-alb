@@ -28,7 +28,7 @@ variable "security_groups" {
 variable "enable_deletion_protection" {
   type        = bool
   description = "Enable deletion protection"
-  default     = false
+  default     = true
 }
 
 variable "enable_cross_zone_load_balancing" {
@@ -52,7 +52,19 @@ variable "enable_http2" {
 variable "drop_invalid_header_fields" {
   type        = bool
   description = "Drop invalid header fields"
+  default     = true
+}
+
+variable "enable_waf_fail_open" {
+  type        = bool
+  description = "Allow requests to route to targets when AWS WAF is unavailable"
   default     = false
+}
+
+variable "access_logs_kms_key_id" {
+  type        = string
+  description = "KMS key ID used by the access logs bucket. Kept for manifest compatibility; ALB access_logs does not accept a KMS key directly"
+  default     = ""
 }
 
 variable "access_logs" {
@@ -101,6 +113,15 @@ variable "ssl_policy" {
   type        = string
   description = "SSL policy for managed HTTPS listener"
   default     = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+
+  validation {
+    condition = (
+      startswith(var.ssl_policy, "ELBSecurityPolicy-TLS13-") ||
+      startswith(var.ssl_policy, "ELBSecurityPolicy-FS-") ||
+      startswith(var.ssl_policy, "ELBSecurityPolicy-TLS-1-2-")
+    )
+    error_message = "ssl_policy must enforce TLS 1.2 or higher"
+  }
 }
 
 variable "default_target_group_arn" {
