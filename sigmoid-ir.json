@@ -15,9 +15,9 @@
         }
     },
     "outputs": [
-        { "name": "lb_arn" },
-        { "name": "dns_name" },
-        { "name": "default_target_group_arn" }
+        { "name": "lb_arn", "value": "lb_arn" },
+        { "name": "dns_name", "value": "dns_name" },
+        { "name": "default_target_group_arn", "value": "default_target_group_arn" }
     ],
     "pricing": {
         "lookups": [
