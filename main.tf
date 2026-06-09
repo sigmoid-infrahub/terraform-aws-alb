@@ -14,9 +14,9 @@ resource "aws_lb" "this" {
   enable_waf_fail_open             = var.enable_waf_fail_open
 
   dynamic "access_logs" {
-    for_each = var.access_logs == null ? [] : [var.access_logs]
+    for_each = try(lookup(var.access_logs, "bucket", null), null) == null ? [] : [var.access_logs]
     content {
-      enabled = lookup(access_logs.value, "enabled", null)
+      enabled = lookup(access_logs.value, "enabled", true)
       bucket  = access_logs.value.bucket
       prefix  = lookup(access_logs.value, "prefix", null)
     }
