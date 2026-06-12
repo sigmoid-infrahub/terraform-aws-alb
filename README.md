@@ -36,6 +36,7 @@ module "alb" {
 | `access_logs` | `any` | `null` | Access log configuration |
 | `listeners` | `any` | `[]` | Listeners configuration |
 | `target_groups` | `any` | `[]` | Target groups configuration |
+| `target_instance_ids` | `list(string)` | `[]` | EC2 instance IDs to register with target groups (registered against every defined target group) |
 | `tags` | `map(string)` | `{}` | Tags to apply |
 
 ## Outputs
