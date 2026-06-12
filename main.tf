@@ -1,10 +1,39 @@
+resource "aws_security_group" "this" {
+  count = var.create_security_group ? 1 : 0
+
+  name        = "${var.name}-alb-sg"
+  description = "Security group for ALB ${var.name}"
+  vpc_id      = var.vpc_id
+
+  dynamic "ingress" {
+    for_each = var.ingress_rules
+    content {
+      from_port       = ingress.value.from_port
+      to_port         = ingress.value.to_port
+      protocol        = ingress.value.protocol
+      cidr_blocks     = ingress.value.cidr_blocks
+      security_groups = ingress.value.source_security_group_ids
+      description     = ingress.value.description
+    }
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = local.resolved_tags
+}
+
 resource "aws_lb" "this" {
   name               = var.name
   load_balancer_type = var.load_balancer_type
   internal           = var.internal
 
   subnets         = var.subnets
-  security_groups = var.security_groups
+  security_groups = local.resolved_security_groups
 
   enable_deletion_protection       = var.enable_deletion_protection
   enable_cross_zone_load_balancing = var.enable_cross_zone_load_balancing

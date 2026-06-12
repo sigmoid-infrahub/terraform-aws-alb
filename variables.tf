@@ -25,6 +25,25 @@ variable "security_groups" {
   default     = []
 }
 
+variable "create_security_group" {
+  type        = bool
+  description = "Whether to create a security group for this load balancer"
+  default     = false
+}
+
+variable "ingress_rules" {
+  type = list(object({
+    from_port                 = number
+    to_port                   = number
+    protocol                  = optional(string, "tcp")
+    cidr_blocks               = optional(list(string), [])
+    source_security_group_ids = optional(list(string), [])
+    description               = optional(string, null)
+  }))
+  description = "Ingress rules for the created security group"
+  default     = []
+}
+
 variable "enable_deletion_protection" {
   type        = bool
   description = "Enable deletion protection"
