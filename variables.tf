@@ -155,12 +155,6 @@ variable "target_groups" {
   default     = []
 }
 
-variable "target_instance_ids" {
-  type        = list(string)
-  description = "EC2 instance IDs to register with target groups (registered against every defined target group)"
-  default     = []
-}
-
 variable "vpc_id" {
   type        = string
   description = "Default VPC ID for target groups when not provided per target group"

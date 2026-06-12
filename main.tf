@@ -80,14 +80,6 @@ resource "aws_lb_target_group" "this" {
   tags = local.resolved_tags
 }
 
-resource "aws_lb_target_group_attachment" "this" {
-  for_each = local.target_group_attachments
-
-  target_group_arn = aws_lb_target_group.this[each.value.target_group_name].arn
-  target_id        = each.value.instance_id
-  port             = each.value.port
-}
-
 resource "aws_acm_certificate" "alb" {
   count = var.domain_name != null && var.create_acm_certificate ? 1 : 0
 
