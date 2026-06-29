@@ -57,11 +57,12 @@ resource "aws_lb" "this" {
 resource "aws_lb_target_group" "this" {
   for_each = { for entry in var.target_groups : entry.name => entry }
 
-  name        = each.value.name
-  port        = each.value.backend_port
-  protocol    = each.value.backend_protocol
+  name = each.value.name
+  # Lambda target groups are portless: AWS rejects port/protocol/vpc_id for them.
+  port        = each.value.target_type == "lambda" ? null : lookup(each.value, "backend_port", null)
+  protocol    = each.value.target_type == "lambda" ? null : lookup(each.value, "backend_protocol", null)
   target_type = each.value.target_type
-  vpc_id      = coalesce(lookup(each.value, "vpc_id", null), var.vpc_id)
+  vpc_id      = each.value.target_type == "lambda" ? null : coalesce(lookup(each.value, "vpc_id", null), var.vpc_id)
 
   dynamic "health_check" {
     for_each = lookup(each.value, "health_check", null) == null ? [] : [each.value.health_check]
