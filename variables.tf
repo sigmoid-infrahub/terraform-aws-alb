@@ -98,6 +98,12 @@ variable "listeners" {
   default     = []
 }
 
+variable "listener_rules" {
+  type        = any
+  description = "Path-based rules routing extra target groups on an existing listener (used when one ALB fronts multiple apps)"
+  default     = []
+}
+
 variable "domain_name" {
   type        = string
   description = "Primary domain name for ALB TLS certificate"

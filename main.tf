@@ -154,6 +154,24 @@ resource "aws_lb_listener" "this" {
   }
 }
 
+resource "aws_lb_listener_rule" "this" {
+  for_each = { for idx, rule in var.listener_rules : tostring(idx) => rule }
+
+  listener_arn = aws_lb_listener.this[each.value.listener_key].arn
+  priority     = each.value.priority
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.this[each.value.target_group_key].arn
+  }
+
+  condition {
+    path_pattern {
+      values = each.value.path_patterns
+    }
+  }
+}
+
 resource "aws_lb_listener" "http" {
   count = var.default_target_group_arn != null ? 1 : 0
 

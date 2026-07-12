@@ -33,6 +33,11 @@ output "target_group_arns" {
   value       = [for tg in aws_lb_target_group.this : tg.arn]
 }
 
+output "target_group_arns_by_name" {
+  description = "Map of target group name => ARN for per-app wiring when one ALB fronts multiple apps"
+  value       = { for k, tg in aws_lb_target_group.this : k => tg.arn }
+}
+
 output "security_group_id" {
   description = "Created security group ID"
   value       = try(aws_security_group.this[0].id, null)
@@ -41,13 +46,14 @@ output "security_group_id" {
 output "module" {
   description = "Full module outputs"
   value = {
-    lb_arn                   = aws_lb.this.arn
-    dns_name                 = aws_lb.this.dns_name
-    acm_certificate_arn      = local.acm_certificate_arn
-    http_listener_arn        = try(aws_lb_listener.http[0].arn, null)
-    https_listener_arn       = try(aws_lb_listener.https[0].arn, null)
-    default_target_group_arn = try(values(aws_lb_target_group.this)[0].arn, null)
-    security_group_id        = try(aws_security_group.this[0].id, null)
-    target_group_arns        = [for tg in aws_lb_target_group.this : tg.arn]
+    lb_arn                    = aws_lb.this.arn
+    dns_name                  = aws_lb.this.dns_name
+    acm_certificate_arn       = local.acm_certificate_arn
+    http_listener_arn         = try(aws_lb_listener.http[0].arn, null)
+    https_listener_arn        = try(aws_lb_listener.https[0].arn, null)
+    default_target_group_arn  = try(values(aws_lb_target_group.this)[0].arn, null)
+    security_group_id         = try(aws_security_group.this[0].id, null)
+    target_group_arns         = [for tg in aws_lb_target_group.this : tg.arn]
+    target_group_arns_by_name = { for k, tg in aws_lb_target_group.this : k => tg.arn }
   }
 }
